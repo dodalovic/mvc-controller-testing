@@ -1,19 +1,25 @@
 package rs.dodalovic.demos.category;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
-
-@Service
 public class CategoryService {
-    public List<String> getAllCategories() {
-        return asList("Category 1", "Category 2", "Category 3");
+
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
-    public Optional<String> getCategory(String categoryId) {
-        return Optional.of("Category " + categoryId);
+    List<String> getAllCategories() {
+        return categoryRepository.getAllCategories();
+    }
+
+    Optional<String> getCategory(String categoryId) {
+        return categoryRepository.getCategory(categoryId);
+    }
+
+    Category saveCategory(Category category) {
+        return categoryRepository.save(category);
     }
 }

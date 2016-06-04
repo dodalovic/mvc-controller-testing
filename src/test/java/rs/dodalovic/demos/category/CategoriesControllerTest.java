@@ -1,6 +1,6 @@
 package rs.dodalovic.demos.category;
 
-import org.hamcrest.core.StringContains;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -76,10 +77,13 @@ public class CategoriesControllerTest {
 
     @Test
     public void createsCategory() throws Exception {
+        final Category category = mock(Category.class);
+        given(category.getId()).willReturn(1);
+        given(categoryService.saveCategory(any())).willReturn(category);
         mockMvc.perform(MockMvcRequestBuilders.post("/categories")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Category\"}")
         ).andExpect(status().isCreated())
-                .andExpect(header().string("location", new StringContains("/categories/")));
+                .andExpect(header().string("location", Matchers.containsString("/categories/1")));
     }
 }

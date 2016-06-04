@@ -1,6 +1,6 @@
 package rs.dodalovic.demos.category;
 
-public class Category {
+class Category {
     private int id;
     private String name;
 
@@ -16,11 +16,24 @@ public class Category {
         this.name = name;
     }
 
+    int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "Category{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public Category withId(int id) {
+        this.id = id;
+        return this;
     }
 }
