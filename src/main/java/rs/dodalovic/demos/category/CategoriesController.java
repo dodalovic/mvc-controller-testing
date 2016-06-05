@@ -18,9 +18,13 @@ public class CategoriesController {
 
     private CategoryService categoryService;
 
-    @RequestMapping
-    public List<String> allCategories() {
-        return categoryService.getAllCategories();
+    @RequestMapping(method = RequestMethod.GET, value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<String> allCategories(@RequestParam Optional<Integer> limit) {
+        final List<String> allCategories = categoryService.getAllCategories();
+        if (!limit.isPresent()) {
+            return allCategories;
+        }
+        return allCategories.subList(0, limit.get());
     }
 
     @RequestMapping(value = "/{categoryId}", method = RequestMethod.GET)
@@ -31,14 +35,6 @@ public class CategoriesController {
         }
         return ResponseEntity.badRequest().body(categoryId);
     }
-
-/*
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createCategory(@RequestBody Category category) throws
-            URISyntaxException {
-        return ResponseEntity.created(new URI("http://localhost/categories/1")).body(null);
-    }
-*/
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)

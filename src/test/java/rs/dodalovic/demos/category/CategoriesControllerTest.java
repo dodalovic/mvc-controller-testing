@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import rs.dodalovic.demos.DemoApplication;
@@ -39,7 +40,7 @@ public class CategoriesControllerTest {
     }
 
     @Test
-    public void allCategories() throws Exception {
+    public void returnsAllCategories() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/categories")
                         .accept(MediaType.APPLICATION_JSON))
@@ -48,6 +49,16 @@ public class CategoriesControllerTest {
                 .andExpect(jsonPath("$[0]", Matchers.equalTo("Category 1")))
                 .andExpect(jsonPath("$[1]", Matchers.equalTo("Category 2")))
                 .andExpect(jsonPath("$[2]", Matchers.equalTo("Category 3")));
+    }
+
+    @Test
+    public void returnsLimitedNumberOfAllCategories() throws Exception {
+        /* when */
+        final ResultActions resultActions = mockMvc
+                .perform(MockMvcRequestBuilders.get("/categories").param("limit", "2")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+        /* then */
+        resultActions.andExpect(jsonPath("$", Matchers.hasSize(2)));
     }
 
     @Test
