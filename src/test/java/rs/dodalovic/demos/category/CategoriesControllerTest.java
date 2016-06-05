@@ -44,7 +44,10 @@ public class CategoriesControllerTest {
                 MockMvcRequestBuilders.get("/categories")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("[\"Category 1\",\"Category 2\",\"Category 3\"]"));
+                .andExpect(jsonPath("$", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$[0]", Matchers.equalTo("Category 1")))
+                .andExpect(jsonPath("$[1]", Matchers.equalTo("Category 2")))
+                .andExpect(jsonPath("$[2]", Matchers.equalTo("Category 3")));
     }
 
     @Test
@@ -63,7 +66,7 @@ public class CategoriesControllerTest {
                 MockMvcRequestBuilders.get("/categories/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Category 1"));
+                .andExpect(jsonPath("$", Matchers.equalTo("Category 1")));
     }
 
     @Test
