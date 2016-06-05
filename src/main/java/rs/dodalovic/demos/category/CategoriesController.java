@@ -28,12 +28,12 @@ public class CategoriesController {
     }
 
     @RequestMapping(value = "/{categoryId}", method = RequestMethod.GET)
-    public ResponseEntity<String> showCategory(@PathVariable("categoryId") String categoryId) {
-        final Optional<String> category = categoryService.getCategory(categoryId);
+    public ResponseEntity<Category> showCategory(@PathVariable("categoryId") int categoryId) {
+        final Optional<Category> category = categoryService.getCategory(categoryId);
         if (category.isPresent()) {
             return ResponseEntity.ok(category.get());
         }
-        return ResponseEntity.badRequest().body(categoryId);
+        return ResponseEntity.badRequest().body(null);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -15,7 +15,7 @@ public class CategoryRepository {
         return asList("Category 1", "Category 2", "Category 3");
     }
 
-    Optional<String> getCategory(String categoryId) {
-        return Optional.of("Category " + categoryId);
+    Optional<Category> getCategory(int categoryId) {
+        return Optional.of(new Category(categoryId, "Category-name"));
     }
 }

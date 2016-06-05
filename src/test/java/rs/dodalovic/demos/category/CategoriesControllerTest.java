@@ -41,63 +41,88 @@ public class CategoriesControllerTest {
 
     @Test
     public void returnsAllCategories() throws Exception {
-        mockMvc.perform(
+        /* when */
+        final ResultActions result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/categories")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                        .accept(MediaType.APPLICATION_JSON));
+        /* then*/
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$[0]", Matchers.equalTo("Category 1")))
-                .andExpect(jsonPath("$[1]", Matchers.equalTo("Category 2")))
-                .andExpect(jsonPath("$[2]", Matchers.equalTo("Category 3")));
+                .andExpect(jsonPath("$[0]", Matchers.is("Category 1")))
+                .andExpect(jsonPath("$[1]", Matchers.is("Category 2")))
+                .andExpect(jsonPath("$[2]", Matchers.is("Category 3")));
     }
 
     @Test
     public void returnsLimitedNumberOfAllCategories() throws Exception {
         /* when */
-        final ResultActions resultActions = mockMvc
+        final ResultActions result = mockMvc
                 .perform(MockMvcRequestBuilders.get("/categories").param("limit", "2")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         /* then */
-        resultActions.andExpect(jsonPath("$", Matchers.hasSize(2)));
+        result.andExpect(jsonPath("$", Matchers.hasSize(2)));
     }
 
     @Test
     public void asserts404ForNotExistingCategory() throws Exception {
-        given(categoryService.getCategory("-1")).willReturn(Optional.empty());
-        mockMvc.perform(
+        /* given */
+        given(categoryService.getCategory(-1)).willReturn(Optional.empty());
+
+        /* when */
+        final ResultActions result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/categories/-1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+                        .accept(MediaType.APPLICATION_JSON));
+
+        /* then */
+        result.andExpect(status().is4xxClientError());
     }
 
     @Test
     public void assertsCategoryFound() throws Exception {
-        given(categoryService.getCategory("1")).willReturn(Optional.of("Category 1"));
-        mockMvc.perform(
+        /* given */
+        given(categoryService.getCategory(1)).willReturn(Optional.of(new Category(1, "Category 1")));
+
+        /* when */
+        final ResultActions result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/categories/1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.equalTo("Category 1")));
+                        .accept(MediaType.APPLICATION_JSON));
+        /* then */
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", Matchers.is("Category 1")));
     }
 
     @Test
     public void postForbiddenToGetCategory() throws Exception {
-        given(categoryService.getCategory("1")).willReturn(Optional.of("Category 1"));
-        mockMvc.perform(
+        /* given */
+        Category category = mock(Category.class);
+        given(category.getId()).willReturn(1);
+        given(category.getName()).willReturn("Category 1");
+        given(categoryService.getCategory(1)).willReturn(Optional.of(category));
+
+        /* when */
+        final ResultActions result = mockMvc.perform(
                 MockMvcRequestBuilders.post("/categories/1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isMethodNotAllowed());
+                        .accept(MediaType.APPLICATION_JSON));
+
+        /* then */
+        result.andExpect(status().isMethodNotAllowed());
     }
 
     @Test
     public void createsCategory() throws Exception {
+        /* given */
         final Category category = mock(Category.class);
         given(category.getId()).willReturn(1);
         given(categoryService.saveCategory(any())).willReturn(category);
-        mockMvc.perform(MockMvcRequestBuilders.post("/categories")
+
+        /* when */
+        final ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/categories")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Category\"}")
-        ).andExpect(status().isCreated())
+        );
+
+        /* then */
+        result.andExpect(status().isCreated())
                 .andExpect(header().string("location", Matchers.containsString("/categories/1")));
     }
 }

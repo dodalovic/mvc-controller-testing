@@ -15,7 +15,7 @@ public class CategoryService {
         return categoryRepository.getAllCategories();
     }
 
-    Optional<String> getCategory(String categoryId) {
+    Optional<Category> getCategory(int categoryId) {
         return categoryRepository.getCategory(categoryId);
     }
 
